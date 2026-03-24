@@ -1,4 +1,4 @@
-package main;
+package main.main;
 
 import parser.LexicalAnalyzer;
 import java.util.List;
