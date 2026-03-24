@@ -1,10 +1,12 @@
-package main.main;
+package main;
 
 import parser.LexicalAnalyzer;
 import java.util.List;
 import java.util.Scanner;
 
+// ΠΡΟΣΟΧΗ: Το όνομα της κλάσης πρέπει να ξεκινά με ΚΕΦΑΛΑΙΟ 'M'
 public class Main {
+
     public static void main(String[] args) {
         LexicalAnalyzer parser = new LexicalAnalyzer();
         Scanner scanner = new Scanner(System.in);

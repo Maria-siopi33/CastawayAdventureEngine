@@ -1,11 +1,7 @@
-package parser;
+package command;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class LexicalAnalyzer {
-    public List<String> analyze(String input) {
-        // Μετατρέπει το "GO NORTH" σε ["go", "north"]
-        return Arrays.asList(input.toLowerCase().trim().split("\\s+"));
-    }
+public interface Command {
+    void execute(List<String> tokens);
 }
