@@ -1,0 +1,16 @@
+{
+  "rooms": [
+    {
+      "id": "Beach",
+      "name": "The Golden Beach",
+      "description": "A sunny shore with white sand.",
+      "exits": { "north": "Jungle" }
+    },
+    {
+      "id": "Jungle",
+      "name": "The Deep Jungle",
+      "description": "Dense trees everywhere.",
+      "exits": { "south": "Beach" }
+    }
+  ]
+}
