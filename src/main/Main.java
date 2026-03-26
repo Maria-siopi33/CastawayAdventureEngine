@@ -1,4 +1,4 @@
-package main; // Βεβαιώσου ότι το package name είναι το σωστό για το δικό σου project
+package main;
 
 import command.CommandHandler;
 import engine.GameContext;
@@ -7,7 +7,6 @@ import engine.WorldBuilder;
 import parser.LexicalAnalyzer;
 import parser.ParsedCommand; // Προστέθηκε αυτό
 
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
