@@ -26,7 +26,7 @@ public class Main {
 
         LexicalAnalyzer parser = null;
         try {
-            // Χρησιμοποιούμε το path που βλέπω στο screenshot σου
+
             parser = new LexicalAnalyzer("resources/grammar.json");
             System.out.println("Ο Parser φορτώθηκε επιτυχώς!");
         } catch (Exception e) {

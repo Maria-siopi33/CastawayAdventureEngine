@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Room {
     private String name;
     private String description;
-    private Map<String, String> exits = new HashMap<>();
-    private List<String> items = new ArrayList<>();
+    private Map<Direction, Room> exits = new HashMap<>();
+    private List<Item> items = new ArrayList<>();
 
     public Room(String name, String description) {
         this.name = name;
