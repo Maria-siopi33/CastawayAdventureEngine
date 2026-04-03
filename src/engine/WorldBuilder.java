@@ -30,16 +30,21 @@ public class WorldBuilder {
                 world.put(id, room);
             }
 
-            // 4. Δεύτερο πέρασμα: Σύνδεση των εξόδων (αφού υπάρχουν ήδη όλα τα Rooms)
+// 4. Δεύτερο πέρασμα: Σύνδεση των εξόδων (αφού υπάρχουν ήδη όλα τα Rooms)
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 String id = roomData.getString("id");
                 Room currentRoom = world.get(id);
 
                 JSONObject exits = roomData.getJSONObject("exits");
-                for (String direction : exits.keySet()) {
-                    String targetRoomId = exits.getString(direction);
-                    currentRoom.setExit(direction, targetRoomId);
+                for (String directionString : exits.keySet()) {
+                    String targetRoomId = exits.getString(directionString);
+
+                    // ΜΕΤΑΤΡΟΠΗ: String σε Direction enum και αναζήτηση του Room από το Map
+                    Direction dir = Direction.valueOf(directionString.toUpperCase());
+                    Room targetRoom = world.get(targetRoomId);
+
+                    currentRoom.setExit(dir, targetRoom);
                 }
             }
 

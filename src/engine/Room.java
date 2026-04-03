@@ -8,30 +8,39 @@ import java.util.ArrayList;
 public class Room {
     private String name;
     private String description;
+    //private Map<Direction, Room> exits = new HashMap<>();
+    //private List<Item> items = new ArrayList<>();
+
+    // 1. Διόρθωση: List<String> αντί για List<Item>
     private Map<Direction, Room> exits = new HashMap<>();
-    private List<Item> items = new ArrayList<>();
+    private List<String> items = new ArrayList<>();
 
     public Room(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public void setExit(String direction, String roomName) {
-        exits.put(direction, roomName);
+    // 2. Διόρθωση: Δέχεται Direction και Room αντί για Strings
+    public void setExit(Direction direction, Room room) {
+        exits.put(direction, room);
     }
 
     public String getDescription() {
         return name + ": " + description;
     }
 
-    public String getExit(String direction) {
+    // 3. Διόρθωση: Δέχεται Direction και επιστρέφει αντικείμενο Room
+    public Room getExit(Direction direction) {
         return exits.get(direction);
     }
 
-    // ΠΡΟΣΘΕΣΕ ΑΥΤΟ: Για να μπορεί ο WorldBuilder να διαβάζει τις εξόδους από το JSON
-    public Map<String, String> getExits() {
+    // 4. Διόρθωση: Επιστρέφει το σωστό Map
+    public Map<Direction, Room> getExits() {
         return exits;
     }
+
+    // 5. Διόρθωση (προαιρετική): Προσθέτει το αντικείμενο ως String,
+    // μεχρι να γινει κλάση Item στο μέλλον
 
     public void addItem(String item) {
         items.add(item);

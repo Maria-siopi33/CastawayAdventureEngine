@@ -1,5 +1,6 @@
 package command;
 
+import engine.Direction;
 import engine.GameContext;
 import engine.Room;
 import java.util.List;
@@ -21,14 +22,24 @@ public class GoCommand implements Command {
             return;
         }
 
-        String direction = tokens.get(1);
-        String nextRoomId = context.getCurrentRoom().getExit(direction);
+        // 1. Παίρνουμε την κατεύθυνση και προσπαθούμε να τη μετατρέψουμε σε Enum
+        String directionStr = tokens.get(1).toUpperCase();
+        Direction direction;
+        try {
+            direction = Direction.valueOf(directionStr);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Δεν είναι έγκυρη κατεύθυνση (North, South, East, West).");
+            return;
+        }
 
-        if (nextRoomId != null && world.containsKey(nextRoomId)) {
-            context.setCurrentRoom(world.get(nextRoomId));//το νεο δωματιο ->τρεχον
+        // 2. Ζητάμε το αντικείμενο Room απευθείας
+        Room nextRoom = context.getCurrentRoom().getExit(direction);
+
+        // 3. Αν υπάρχει, πάμε εκεί
+        if (nextRoom != null) {
+            context.setCurrentRoom(nextRoom);
             System.out.println("Πήγες στο: " + context.getCurrentRoom().getName());
             System.out.println(context.getCurrentRoom().getDescription());
-            //εδω θα μπορουσε να λεει ποιες ειναι οι διαθεσιμες εξοδους απο το δωματιο
         } else {
             System.out.println("Δεν μπορείς να πας προς τα εκεί.");
         }
