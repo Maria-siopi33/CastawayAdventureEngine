@@ -8,13 +8,11 @@ import java.util.ArrayList;
 public class Room {
     private String name;
     private String description;
-    //private Map<Direction, Room> exits = new HashMap<>();
-    //private List<Item> items = new ArrayList<>();
 
     // 1. Διόρθωση: List<String> αντί για List<Item>
     private Map<Direction, Room> exits = new HashMap<>();
-    private List<String> items = new ArrayList<>();
 
+    private List<Item> items = new ArrayList<>();
     public Room(String name, String description) {
         this.name = name;
         this.description = description;
@@ -39,13 +37,14 @@ public class Room {
         return exits;
     }
 
-    // 5. Διόρθωση (προαιρετική): Προσθέτει το αντικείμενο ως String,
-    // μεχρι να γινει κλάση Item στο μέλλον
-
-    public void addItem(String item) {
+    // Η μέθοδος δέχεται πλέον το Object (Item) και όχι String
+    public void addItem(Item item) {
         items.add(item);
     }
-
+    // αυτό θα μας χρειαστεί σύντομα για το LookCommand!
+    public List<Item> getItems() {
+        return items;
+    }
     public String getName() {
         return name;
     }
