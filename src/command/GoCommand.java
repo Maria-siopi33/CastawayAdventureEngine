@@ -34,8 +34,10 @@ public class GoCommand implements Command {
         if (nextRoom != null) {
             context.setCurrentRoom(nextRoom);
             // Επιστρέφουμε το κείμενο ως ένα ενιαίο String
-            return "Πήγες στο: " + context.getCurrentRoom().getName() + "\n" +
-                    context.getCurrentRoom().getDescription();
+            /*return "Πήγες στο: " + context.getCurrentRoom().getName() + "\n" +
+                    context.getCurrentRoom().getDescription();*/
+            return "You are at the " + nextRoom.getName().toLowerCase() + ".\n" +
+                    nextRoom.getDescription().replace(nextRoom.getName() + ":", "").trim();
         } else {
             return "Δεν μπορείς να πας προς τα εκεί.";
         }

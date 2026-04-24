@@ -21,15 +21,23 @@ public class Display {
         this.parser = parser;
         createUI();
 
-        writeText("Microsoft Windows [Version 10.0.26200.8037]");
-        writeText("(c) Microsoft Corporation. All rights reserved.\n");
+        writeText("Welcome to our game!\n");
+
         if (context.getCurrentRoom() != null) {
-            writeText(context.getCurrentRoom().getDescription());
+            String roomName = context.getCurrentRoom().getName();
+            String description = context.getCurrentRoom().getDescription();
+
+            String cleanDescription = description.replace(roomName + ":", "").trim();
+
+            writeText("You are at the " + roomName.toLowerCase() + ".");
+            writeText(cleanDescription);
+            writeText("------------------------------------------");
         }
     }
 
+
     private void createUI() {
-        window = new JFrame("Command Prompt - Ο Ναυαγός");
+        window = new JFrame("Command Prompt");
         window.setSize(900, 600);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.getContentPane().setBackground(Color.BLACK);
@@ -38,13 +46,13 @@ public class Display {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.BLACK);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER; //Κάθε στοιχείο πιάνει μια γραμμή
         gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.fill = GridBagConstraints.HORIZONTAL; //Οριζόντια επέκταση
         gbc.anchor = GridBagConstraints.NORTHWEST; // Όλα ξεκινούν από πάνω αριστερά
 
         textArea = new JTextArea();
-        textArea.setEditable(false);
+        textArea.setEditable(false);  //ΔΕΝ μπορεί να επεξ. αυτά που εχει γράψει ήδη.
         textArea.setBackground(Color.BLACK);
         textArea.setForeground(Color.WHITE);
         textArea.setFont(new Font("Consolas", Font.PLAIN, 16));
@@ -72,7 +80,7 @@ public class Display {
         mainPanel.add(textArea, gbc);
         mainPanel.add(inputPanel, gbc);
 
-        
+
         gbc.weighty = 1;
         mainPanel.add(new JPanel() {{ setBackground(Color.BLACK); }}, gbc);
 
@@ -85,11 +93,11 @@ public class Display {
         inputField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String input = inputField.getText().trim();
+                String input = inputField.getText().trim();//Βγαζει τα κενά
                 if (!input.isEmpty()) {
                     handleInput(input);
                 }
-                inputField.setText("");
+                inputField.setText(""); //αρχικοποιει για την επομενη εισαγωγη
             }
         });
 
@@ -99,14 +107,14 @@ public class Display {
     }
 
     public void writeText(String text) {
-        textArea.append(text + "\n");
+        textArea.append(text + "\n"); //Προσαρτηση του νεου κειμενου
         textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 
     private void handleInput(String input) {
         writeText("> " + input);
-        ParsedCommand pc = parser.analyze(input);
-        String response = commandHandler.handle(pc);
+        ParsedCommand pc = parser.analyze(input); //Σπάει την πρόταση
+        String response = commandHandler.handle(pc); //Αλλαζει το state του ggame
         writeText(response + "\n");
     }
 }
