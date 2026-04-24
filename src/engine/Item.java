@@ -1,7 +1,7 @@
 package engine;
 
 public abstract class Item {
-    // protected σημαίνει ότι οι "θυγατρικές" κλάσεις θα έχουν πρόσβαση σε αυτά
+    // protected : οι "θυγατρικές" κλάσεις θα έχουν πρόσβαση σε αυτά
     protected String name;
     protected String description;
 

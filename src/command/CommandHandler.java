@@ -2,11 +2,11 @@ package command;
 
 import engine.GameContext;
 import engine.Room;
-import parser.ParsedCommand; // 1. ΠΡΟΣΘΕΣΕ ΑΥΤΟ ΤΟ IMPORT
+import parser.ParsedCommand;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList; // Χρειάζεται για τη μετατροπή παρακάτω
+import java.util.List;
+import java.util.ArrayList;
 
 public class CommandHandler {
     private final Map<String, Command> commands = new HashMap<>();
@@ -16,35 +16,31 @@ public class CommandHandler {
         commands.put("go", new GoCommand(context, world));
         commands.put("look", new LookCommand(context));
 
-        // συνώνυμα
+        // Συνώνυμα
         aliases.put("walk", "go");
         aliases.put("move", "go");
     }
 
-    // 2. ΑΛΛΑΓΗ ΣΤΗΝ ΠΑΡΑΜΕΤΡΟ: Από List<String> σε ParsedCommand
-    public void handle(ParsedCommand pc) {
-        if (pc == null) return;
+    public String handle(ParsedCommand pc) {
+        if (pc == null || pc.getAction().equals("UNKNOWN")) {
+            return "Δεν κατάλαβα τι θέλεις να κάνεις.";
+        }
 
-        // Παίρνουμε το ρήμα από το αντικείμενο ParsedCommand
         String inputVerb = pc.getAction().toLowerCase();
-
-        // Αν η λέξη είναι συνώνυμο (αν και ο Parser το κάνει ήδη, το κρατάμε για ασφάλεια)
         String officialVerb = aliases.getOrDefault(inputVerb, inputVerb);
 
         Command cmd = commands.get(officialVerb);
 
         if (cmd != null) {
-            // 3. ΜΕΤΑΤΡΟΠΗ: Οι εντολές σου (GoCommand, κλπ) περιμένουν List<String>.
-            // Φτιάχνουμε μια λίστα "tokens" από το ParsedCommand για να μην χαλάσουν οι εντολές.
             List<String> tokens = new ArrayList<>();
-            tokens.add(officialVerb); // π.χ. "go"
+            tokens.add(officialVerb);
             if (!pc.getDirectObject().isEmpty()) {
-                tokens.add(pc.getDirectObject()); // π.χ. "north"
+                tokens.add(pc.getDirectObject());
             }
 
-            cmd.execute(tokens);
+            return cmd.execute(tokens);
         } else {
-            System.out.println("Δεν γνωρίζω την εντολή: " + inputVerb);
+            return "Δεν γνωρίζω την εντολή: " + inputVerb;
         }
     }
 }
