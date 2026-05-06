@@ -11,7 +11,7 @@ public class LookCommand implements Command {
     }
 
     @Override
-    public void execute(List<String> tokens) {
-        System.out.println(context.getCurrentRoom().getDescription());
+    public String execute(List<String> tokens) {
+        return context.getCurrentRoom().getDescription();
     }
 }

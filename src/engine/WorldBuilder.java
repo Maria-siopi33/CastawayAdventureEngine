@@ -13,14 +13,14 @@ public class WorldBuilder {
         Map<String, Room> world = new HashMap<>();
 
         try {
-            // 1. Διαβάζουμε το αρχείο ως κείμενο
+            // Διαβάζουμε το αρχείο ως κείμενο
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
 
-            // 2. Μετατρέπουμε το κείμενο σε αντικείμενο JSON
+            // Μετατρέπουμε το κείμενο σε αντικείμενο JSON
             JSONObject fullJson = new JSONObject(content);
             JSONArray roomsArray = fullJson.getJSONArray("rooms");
 
-            // 3. Πρώτο πέρασμα: Δημιουργία όλων των δωματίων
+            // Δημιουργία όλων των δωματίων
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 String id = roomData.getString("id");
@@ -30,16 +30,21 @@ public class WorldBuilder {
                 world.put(id, room);
             }
 
-            // 4. Δεύτερο πέρασμα: Σύνδεση των εξόδων (αφού υπάρχουν ήδη όλα τα Rooms)
+            //Σύνδεση των εξόδων (αφού υπάρχουν ήδη όλα τα Rooms)
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 String id = roomData.getString("id");
                 Room currentRoom = world.get(id);
 
                 JSONObject exits = roomData.getJSONObject("exits");
-                for (String direction : exits.keySet()) {
-                    String targetRoomId = exits.getString(direction);
-                    currentRoom.setExit(direction, targetRoomId);
+                for (String directionString : exits.keySet()) {
+                    String targetRoomId = exits.getString(directionString);
+
+
+                    Direction dir = Direction.valueOf(directionString.toUpperCase());
+                    Room targetRoom = world.get(targetRoomId);
+
+                    currentRoom.setExit(dir, targetRoom);
                 }
             }
 

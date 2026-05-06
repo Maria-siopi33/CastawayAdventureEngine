@@ -1,5 +1,6 @@
 package command;
 
+import engine.Direction;
 import engine.GameContext;
 import engine.Room;
 import java.util.List;
@@ -15,22 +16,30 @@ public class GoCommand implements Command {
     }
 
     @Override
-    public void execute(List<String> tokens) {
+    public String execute(List<String> tokens) {
         if (tokens.size() < 2) {
-            System.out.println("Προς τα πού; (π.χ. go north)");
-            return;
+            return "Προς τα πού; (π.χ. go north)";
         }
 
-        String direction = tokens.get(1);
-        String nextRoomId = context.getCurrentRoom().getExit(direction);
+        String directionStr = tokens.get(1).toUpperCase();
+        Direction direction;
+        try {
+            direction = Direction.valueOf(directionStr);
+        } catch (IllegalArgumentException e) {
+            return "Δεν είναι έγκυρη κατεύθυνση (North, South, East, West).";
+        }
 
-        if (nextRoomId != null && world.containsKey(nextRoomId)) {
-            context.setCurrentRoom(world.get(nextRoomId));//το νεο δωματιο ->τρεχον
-            System.out.println("Πήγες στο: " + context.getCurrentRoom().getName());
-            System.out.println(context.getCurrentRoom().getDescription());
-            //εδω θα μπορουσε να λεει ποιες ειναι οι διαθεσιμες εξοδους απο το δωματιο
+        Room nextRoom = context.getCurrentRoom().getExit(direction);
+
+        if (nextRoom != null) {
+            context.setCurrentRoom(nextRoom);
+            // Επιστρέφουμε το κείμενο ως ένα ενιαίο String
+            /*return "Πήγες στο: " + context.getCurrentRoom().getName() + "\n" +
+                    context.getCurrentRoom().getDescription();*/
+            return "You are at the " + nextRoom.getName().toLowerCase() + ".\n" +
+                    nextRoom.getDescription().replace(nextRoom.getName() + ":", "").trim();
         } else {
-            System.out.println("Δεν μπορείς να πας προς τα εκεί.");
+            return "Δεν μπορείς να πας προς τα εκεί.";
         }
     }
 }
