@@ -16,10 +16,10 @@ public class LexicalAnalyzer {
             // Το JSON μετατρέπεται αυτόματα σε αντικείμενο Java
             GrammarConfig config = mapper.readValue(new File(jsonPath), GrammarConfig.class);
 
-            // Μπορείς να χρησιμοποιήσεις τα config.stopWords, config.commands κτλ.
-            System.out.println("Το Grammar φορτώθηκε επιτυχώς!");
+
+            System.out.println("Grammar loaded succesfully!");
         } catch (Exception e) {
-            System.err.println("Σφάλμα στην ανάγνωση του JSON: " + e.getMessage());
+            System.err.println("Error reading JSON: " + e.getMessage());
         }
 
         loadGrammar(jsonPath);

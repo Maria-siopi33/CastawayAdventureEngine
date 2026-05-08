@@ -8,11 +8,9 @@ import java.util.Map;
 
 public class GoCommand implements Command {
     private GameContext context;
-    private Map<String, Room> world;
 
-    public GoCommand(GameContext context, Map<String, Room> world) {
+    public GoCommand(GameContext context) {
         this.context = context;
-        this.world = world;
     }
 
     @Override
