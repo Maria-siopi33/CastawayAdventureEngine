@@ -2,15 +2,36 @@
   "rooms": [
     {
       "id": "Beach",
-      "name": "The Golden Beach",
-      "description": "A sunny shore with white sand.",
-      "exits": { "north": "Jungle" }
+      "description": "You are on a sunny beach. The sand is golden.",
+      "exits": {
+        "north": "Jungle"
+      },
+      "items": [
+        {
+          "name": "Shell",
+          "description": "A beautiful white sea shell.",
+          "carryable": true
+        },
+        {
+          "name": "Rock",
+          "description": "A heavy gray rock that seems stuck in the sand.",
+          "carryable": false
+        }
+      ]
     },
     {
       "id": "Jungle",
-      "name": "The Deep Jungle",
-      "description": "Dense trees everywhere.",
-      "exits": { "south": "Beach" }
+      "description": "A dense jungle with tall trees.",
+      "exits": {
+        "south": "Beach"
+      },
+      "items": [
+        {
+          "name": "Machete",
+          "description": "A sharp blade, useful for cutting vines.",
+          "carryable": true
+        }
+      ]
     }
   ]
 }

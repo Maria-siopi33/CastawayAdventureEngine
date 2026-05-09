@@ -1,7 +1,6 @@
 package engine;
 
 public abstract class Item {
-    // protected : οι "θυγατρικές" κλάσεις θα έχουν πρόσβαση σε αυτά
     protected String name;
     protected String description;
 
@@ -17,8 +16,4 @@ public abstract class Item {
     public String getDescription() {
         return description;
     }
-
-    // Κάθε υποκλάση θα ΠΡΕΠΕΙ να απαντάει
-    // αν μπορεί να συλλεχθεί ή όχι, με τον δικό της τρόπο.
-    public abstract boolean canBePickedUp();
 }

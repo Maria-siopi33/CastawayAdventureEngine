@@ -44,6 +44,20 @@ public class Room {
     public List<Item> getItems() {
         return items;
     }
+
+    public void removeItem(Item item) {
+        items.remove(item);
+    }
+
+    // Βοηθητική μέθοδος για να βρίσκουμε ένα αντικείμενο στο δωμάτιο με το όνομά του
+    public Item findItem(String itemName) {
+        for (Item item : items) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
     public String getName() {
         return name;
     }

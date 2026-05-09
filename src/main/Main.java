@@ -1,27 +1,31 @@
 package main;
 
-import command.CommandHandler;
-import engine.GameContext;
-import engine.Room;
-import engine.WorldBuilder;
+import command.*; // Εισαγωγή όλων των εντολών
+import engine.*;
 import parser.LexicalAnalyzer;
 import javax.swing.JOptionPane;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        // 1. Φόρτωση Κόσμου
         WorldBuilder builder = new WorldBuilder();
         Map<String, Room> world = builder.buildWorld("resources/world.json");
 
         if (world == null || world.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Error:The world was not loaded.");
+            JOptionPane.showMessageDialog(null, "Error: The world was not loaded.");
             return;
         }
 
-        GameContext context = new GameContext(world.get("Beach"));
+        // 2. ΔΗΜΙΟΥΡΓΙΑ PLAYER & CONTEXT
+        // Ξεκινάμε π.χ. από το "Beach"
+        Player player = new Player(world.get("Beach"));
+        GameContext context = new GameContext(player);
 
+        // 3. ΦΟΡΤΩΣΗ ΓΡΑΜΜΑΤΙΚΗΣ (PARSER)
         LexicalAnalyzer parser;
         try {
             parser = new LexicalAnalyzer("resources/grammar.json");
@@ -30,8 +34,23 @@ public class Main {
             return;
         }
 
-        CommandHandler commandHandler = new CommandHandler(context, world);
+        // 4. DEPENDENCY INJECTION (Το κούμπωμα)
+        // Φτιάχνουμε το "λεξικό" των εντολών που θα χρησιμοποιεί ο Handler
+        Map<String, Command> availableCommands = new HashMap<>();
 
+        availableCommands.put("GO", new GoCommand(context));
+        availableCommands.put("LOOK", new LookCommand(context));
+        availableCommands.put("TAKE", new TakeCommand(context));
+        availableCommands.put("DROP", new DropCommand(context));
+        availableCommands.put("USE", new UseCommand(context));
+        availableCommands.put("SWIM", new SwimCommand(context));
+        availableCommands.put("UNLOCK", new UnlockCommand(context));
+
+        // 5. ΔΗΜΙΟΥΡΓΙΑ COMMAND HANDLER
+        // Του δίνουμε μόνο τις εντολές. Δεν χρειάζεται πλέον το 'world'!
+        CommandHandler commandHandler = new CommandHandler(availableCommands);
+
+        // 6. ΕΚΚΙΝΗΣΗ GUI
         new Display(commandHandler, parser, context);
     }
 }

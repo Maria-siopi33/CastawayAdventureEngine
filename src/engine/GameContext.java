@@ -1,18 +1,36 @@
 package engine;
 
 public class GameContext {
-    private Room currentRoom;
+    // Αντί για Room, τώρα κρατάμε την οντότητα Player
+    private Player player;
+    private boolean isRunning; // Χρήσιμο για να ξέρει το engine πότε τελειώνει το παιχνίδι
 
-    // Ο Constructor: Δέχεται το δωμάτιο στο οποίο ξεκινάει ο παίκτης
-    public GameContext(Room startingRoom) {
-        this.currentRoom = startingRoom;
+    // Ο Constructor δέχεται πλέον το αντικείμενο Player
+    public GameContext(Player player) {
+        this.player = player;
+        this.isRunning = true;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    // Helper μέθοδος: Επιστρέφει το δωμάτιο του παίκτη
+    // Έτσι δεν χρειάζεται να αλλάξεις παντού τον παλιό σου κώδικα
     public Room getCurrentRoom() {
-        return currentRoom;
+        return player.getCurrentRoom();
     }
 
-    public void setCurrentRoom(Room currentRoom) {
-        this.currentRoom = currentRoom;
+    // Helper μέθοδος: Αλλάζει το δωμάτιο μέσω του Player
+    public void setCurrentRoom(Room room) {
+        player.setCurrentRoom(room);
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 }
