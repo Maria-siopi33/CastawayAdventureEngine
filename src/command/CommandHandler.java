@@ -9,38 +9,41 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class CommandHandler {
+    // Κρατάμε μόνο το Map των εντολών
     private final Map<String, Command> commands = new HashMap<>();
-    private final Map<String, String> aliases = new HashMap<>();
 
     public CommandHandler(GameContext context, Map<String, Room> world) {
-        commands.put("go", new GoCommand(context, world));
-        commands.put("look", new LookCommand(context));
-
-        // Συνώνυμα
-        aliases.put("walk", "go");
-        aliases.put("move", "go");
+        commands.put("GO", new GoCommand(context));
+        commands.put("LOOK", new LookCommand(context));
+        commands.put("TAKE", new TakeCommand(context));
+        commands.put("USE", new UseCommand(context));
+        commands.put("SWIM", new SwimCommand(context));
+        commands.put("UNLOCK", new UnlockCommand(context));
+        commands.put("DROP", new DropCommand(context));
     }
 
     public String handle(ParsedCommand pc) {
         if (pc == null || pc.getAction().equals("UNKNOWN")) {
-            return "Δεν κατάλαβα τι θέλεις να κάνεις.";
+            return "I don't understand what you want to do..";
         }
 
-        String inputVerb = pc.getAction().toLowerCase();
-        String officialVerb = aliases.getOrDefault(inputVerb, inputVerb);
+        // Παίρνουμε την εντολή απευθείας από τον Parser
+        String action = pc.getAction();
 
-        Command cmd = commands.get(officialVerb);
+        Command cmd = commands.get(action);
 
         if (cmd != null) {
             List<String> tokens = new ArrayList<>();
-            tokens.add(officialVerb);
+            tokens.add(action);
+
+            // Αν υπάρχει αντικείμενο (π.χ. "shell"), το προσθέτουμε στα tokens
             if (!pc.getDirectObject().isEmpty()) {
                 tokens.add(pc.getDirectObject());
             }
 
             return cmd.execute(tokens);
         } else {
-            return "Δεν γνωρίζω την εντολή: " + inputVerb;
+            return "Η εντολή '" + action + "' αναγνωρίστηκε αλλά δεν έχει υλοποιηθεί ακόμα.";
         }
     }
 }

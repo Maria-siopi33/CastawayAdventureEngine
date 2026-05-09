@@ -16,7 +16,7 @@ public class Main {
         Map<String, Room> world = builder.buildWorld("resources/world.json");
 
         if (world == null || world.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Σφάλμα: Ο κόσμος δεν φορτώθηκε.");
+            JOptionPane.showMessageDialog(null, "Error:The world was not loaded.");
             return;
         }
 
@@ -26,7 +26,7 @@ public class Main {
         try {
             parser = new LexicalAnalyzer("resources/grammar.json");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Σφάλμα Grammar: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error Grammar: " + e.getMessage());
             return;
         }
 
