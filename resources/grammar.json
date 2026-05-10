@@ -9,16 +9,24 @@
       "synonyms": ["grab", "pick", "get", "collect"]
     },
     {
+      "action": "DROP",
+      "synonyms": ["leave", "discard", "abandon", "put"]
+    },
+    {
       "action": "USE",
       "synonyms": ["utilize", "apply", "operate"]
     },
-	{
+    {
       "action": "SWIM",
       "synonyms": ["dive"]
     },
     {
       "action": "UNLOCK",
       "synonyms": ["open", "unseal"]
+    },
+    {
+      "action": "LOOK",
+      "synonyms": ["examine", "check", "view"]
     }
   ],
   "prepositions": ["with", "to", "on", "at", "using"],

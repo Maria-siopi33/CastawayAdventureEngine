@@ -1,7 +1,6 @@
 package command;
 
-import engine.GameContext;
-import engine.Room;
+import engine.*;
 import java.util.List;
 
 public class TakeCommand implements Command {
@@ -13,30 +12,37 @@ public class TakeCommand implements Command {
 
     @Override
     public String execute(List<String> tokens) {
-        // Έλεγχος αν ο χρήστης έγραψε μόνο "take"
+        // 1. Έλεγχος αν ο χρήστης έγραψε τι θέλει να πάρει
         if (tokens.size() < 2) {
             return "What do you want to take?";
         }
 
-        // Παίρνουμε το όνομα του αντικειμένου από τα tokens
         String itemName = tokens.get(1);
-
-        // Παίρνουμε το τρέχον δωμάτιο από το context
         Room currentRoom = context.getCurrentRoom();
 
-        // Έλεγχος αν το αντικείμενο υπάρχει στο δωμάτιο
-        // Υποθέτουμε ότι η κλάση Room έχει μια μέθοδο hasItem(String name)
-        if (currentRoom.getItems().contains(itemName)) {
+        // 2. Χρησιμοποιούμε τη νέα μέθοδο findItem που πρόσθεσε η ομάδα στην Room
+        // Αυτή επιστρέφει αντικείμενο τύπου Item, όχι String!
+        Item item = currentRoom.findItem(itemName);
 
-            /* ΠΡΟΣΩΡΙΝΟ: Εδώ κανονικά θα γινόταν:
-               currentRoom.removeItem(itemName);
-               context.getPlayer().getInventory().add(itemName);
-            */
-
-            return "You picked up the " + itemName + ". (It's now in your imaginary bag!)";
-        } else {
-            // Αν το αντικείμενο δεν υπάρχει στο JSON του δωματίου
+        // 3. Έλεγχος αν το αντικείμενο υπάρχει όντως στο δωμάτιο
+        if (item == null) {
             return "There is no " + itemName + " here.";
+        }
+
+        // 4. ΕΔΩ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ: Έλεγχος αν το αντικείμενο μπορεί να μεταφερθεί
+        // Χρησιμοποιούμε την "instanceof" για να δούμε αν είναι CarryableItem
+        if (item instanceof CarryableItem) {
+
+            // Το προσθέτουμε στο Inventory του Player (μέσω του context)
+            context.getPlayer().addItem((CarryableItem) item);
+
+            // Το αφαιρούμε από το δωμάτιο
+            currentRoom.removeItem(item);
+
+            return "You picked up the " + item.getName() + ". It's now in your bag!";
+        } else {
+            // Αν είναι π.χ. StaticItem (όπως η Rock στο JSON σας)
+            return "The " + item.getName() + " is too heavy or stuck. You can't take it.";
         }
     }
 }

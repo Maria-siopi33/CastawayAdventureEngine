@@ -1,6 +1,6 @@
-package engine; // 1. Δηλώνεις το πακέτο
+package engine;
 
-// 2. Εισάγεις τις βιβλιοθήκες
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
@@ -8,10 +8,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-// 3. Ανοίγεις την ΚΛΑΣΗ (Αυτό έλειπε!)
+// Ανοίγεις την ΚΛΑΣΗ (Αυτό έλειπε!)
 public class WorldBuilder {
 
-    // 4. Εδώ βάζεις τη μέθοδό σου
+    // Εδώ βάζεις τη μέθοδό σου
     public Map<String, Room> buildWorld(String filePath) {
         Map<String, Room> world = new HashMap<>();
 
@@ -38,6 +38,8 @@ public class WorldBuilder {
 
                         if (isCarryable) {
                             room.addItem(new CarryableItem(name, itemDesc));
+                        } else {
+                            room.addItem(new StaticItem(name, itemDesc));
                         }
                     }
                 }
@@ -56,7 +58,7 @@ public class WorldBuilder {
                     currentRoom.setExit(dir, targetRoom);
                 }
             }
-            System.out.println("Επιτυχής φόρτωση " + world.size() + " δωματίων!");
+            System.out.println("Successful loading " + world.size() + " rooms!");
 
         } catch (Exception e) {
             System.err.println("Error reading JSON: " + filePath + " (" + e.getMessage() + ")");

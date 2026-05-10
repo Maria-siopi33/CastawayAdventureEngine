@@ -11,21 +11,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // 1. Φόρτωση Κόσμου
+        // Φόρτωση Κόσμου
         WorldBuilder builder = new WorldBuilder();
-        Map<String, Room> world = builder.buildWorld("resources/world.json");
+        Map<String, Room> world = builder.buildWorld("lib/world.json");
 
         if (world == null || world.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error: The world was not loaded.");
             return;
         }
 
-        // 2. ΔΗΜΙΟΥΡΓΙΑ PLAYER & CONTEXT
+        // ΔΗΜΙΟΥΡΓΙΑ PLAYER & CONTEXT
         // Ξεκινάμε π.χ. από το "Beach"
         Player player = new Player(world.get("Beach"));
         GameContext context = new GameContext(player);
 
-        // 3. ΦΟΡΤΩΣΗ ΓΡΑΜΜΑΤΙΚΗΣ (PARSER)
+        // ΦΟΡΤΩΣΗ ΓΡΑΜΜΑΤΙΚΗΣ (PARSER)
         LexicalAnalyzer parser;
         try {
             parser = new LexicalAnalyzer("resources/grammar.json");
@@ -34,7 +34,7 @@ public class Main {
             return;
         }
 
-        // 4. DEPENDENCY INJECTION (Το κούμπωμα)
+        // DEPENDENCY INJECTION (Το κούμπωμα)
         // Φτιάχνουμε το "λεξικό" των εντολών που θα χρησιμοποιεί ο Handler
         Map<String, Command> availableCommands = new HashMap<>();
 
@@ -46,11 +46,11 @@ public class Main {
         availableCommands.put("SWIM", new SwimCommand(context));
         availableCommands.put("UNLOCK", new UnlockCommand(context));
 
-        // 5. ΔΗΜΙΟΥΡΓΙΑ COMMAND HANDLER
+        // ΔΗΜΙΟΥΡΓΙΑ COMMAND HANDLER
         // Του δίνουμε μόνο τις εντολές. Δεν χρειάζεται πλέον το 'world'!
         CommandHandler commandHandler = new CommandHandler(availableCommands);
 
-        // 6. ΕΚΚΙΝΗΣΗ GUI
+        // ΕΚΚΙΝΗΣΗ GUI
         new Display(commandHandler, parser, context);
     }
 }
