@@ -13,7 +13,7 @@ public class Main {
 
         // Φόρτωση Κόσμου
         WorldBuilder builder = new WorldBuilder();
-        Map<String, Room> world = builder.buildWorld("lib/world.json");
+        Map<String, Room> world = builder.buildWorld("resources/world.json");
 
         if (world == null || world.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Error: The world was not loaded.");
