@@ -27,6 +27,14 @@
     {
       "action": "LOOK",
       "synonyms": ["examine", "check", "view"]
+    },
+    {
+      "action": "INVENTORY",
+      "synonyms": ["bag", "items", "i"]
+    },
+    {
+      "action": "STATUS",
+      "synonyms": ["me", "info", "stats"]
     }
   ],
   "prepositions": ["with", "to", "on", "at", "using"],

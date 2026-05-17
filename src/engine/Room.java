@@ -10,8 +10,13 @@ public class Room {
     private String description;
 
     private Map<Direction, Room> exits = new HashMap<>();
-
     private List<Item> items = new ArrayList<>();
+    private Map<String, String> lockedObjects = new HashMap<>();
+
+    // ΠΡΟΣΘΗΚΗ: Το δωμάτιο γνωρίζει αν περιέχει νερό (για την SwimCommand)
+    private boolean hasWater = false;
+    private boolean isWinRoom = false;
+
     public Room(String name, String description) {
         this.name = name;
         this.description = description;
@@ -58,7 +63,34 @@ public class Room {
         }
         return null;
     }
+
     public String getName() {
         return name;
     }
+
+    // ΠΡΟΣΘΗΚΗ: Getter και Setter για τη διαχείριση της ιδιότητας του νερού
+    public void setHasWater(boolean hasWater) {
+        this.hasWater = hasWater;
+    }
+
+    public boolean hasWater() {
+        return hasWater;
+    }
+    public void addLockedObject(String objectName, String keyName) {
+        lockedObjects.put(objectName.toLowerCase(), keyName.toLowerCase());
+    }
+
+    public boolean isLocked(String objectName) {
+        return lockedObjects.containsKey(objectName.toLowerCase());
+    }
+
+    public String getRequiredKey(String objectName) {
+        return lockedObjects.get(objectName.toLowerCase());
+    }
+
+    public void unlockObject(String objectName) {
+        lockedObjects.remove(objectName.toLowerCase());
+    }
+    public boolean isWinRoom() { return isWinRoom; }
+    public void setWinRoom(boolean winRoom) { isWinRoom = winRoom; }
 }

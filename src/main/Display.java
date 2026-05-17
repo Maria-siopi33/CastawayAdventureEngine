@@ -4,61 +4,69 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import command.CommandHandler;
-import parser.LexicalAnalyzer;
-import parser.ParsedCommand;
-import engine.GameContext;
 
 public class Display {
     private JFrame window;
     private JTextArea textArea;
     private JTextField inputField;
-    private CommandHandler commandHandler;
-    private LexicalAnalyzer parser;
+    private GameController controller; // Η ΜΟΝΑΔΙΚΗ ΕΞΑΡΤΗΣΗ
 
-    public Display(CommandHandler handler, LexicalAnalyzer parser, GameContext context) {
-        this.commandHandler = handler;
-        this.parser = parser;
+    public Display(GameController controller) {
+        this.controller = controller;
         createUI();
-
-        writeText("Welcome to our game!\n");
-
-        if (context.getCurrentRoom() != null) {
-            String roomName = context.getCurrentRoom().getName();
-            String description = context.getCurrentRoom().getDescription();
-
-            String cleanDescription = description.replace(roomName + ":", "").trim();
-
-            writeText("You are at the " + roomName.toLowerCase() + ".");
-            writeText(cleanDescription);
-            writeText("------------------------------------------");
-        }
+        printWelcomeMessage();
     }
 
+    private void printWelcomeMessage() {
+        writeText("==================================================");
+        writeText("         Welcome to the Text Adventure Engine!    ");
+        writeText("==================================================");
+        writeText("\nΟΔΗΓΙΕΣ ΠΑΙΧΝΙΔΙΟΥ:");
+        writeText("Πληκτρολογήστε εντολές στα αγγλικά για να εξερευνήσετε τον κόσμο.");
+
+        writeText("\n--- ΒΑΣΙΚΕΣ ΚΙΝΗΣΕΙΣ & ΕΞΕΡΕΥΝΗΣΗ ---");
+        writeText("- GO [direction]          : Μετακίνηση (north, south, east, west)");
+        writeText("- LOOK                    : Εξέταση όλου του τρέχοντος δωματίου");
+        writeText("- LOOK AT [item]          : Προσεκτική εξέταση ενός αντικειμένου");
+        writeText("- SWIM                    : Κολύμβηση (αν υπάρχει νερό)");
+        writeText("--- ΔΙΑΧΕΙΡΙΣΗ ΑΝΤΙΚΕΙΜΕΝΩΝ & ΠΑΙΚΤΗ ---");
+        writeText("- TAKE [item]             : Συλλογή αντικειμένου από το έδαφος");
+        writeText("- DROP [item]             : Απόρριψη αντικειμένου από την τσάντα");
+        writeText("- INVENTORY               : Προβολή των αντικειμένων που κρατάτε");
+        writeText("- STATUS                  : Προβολή της γενικής σας κατάστασης");
+        writeText("--- ΑΛΛΗΛΕΠΙΔΡΑΣΗ ---");
+        writeText("- USE [item]              : Χρήση αντικειμένου μόνο του");
+        writeText("- USE [item] on [target]  : Χρήση αντικειμένου πάνω σε κάποιο στόχο");
+        writeText("- UNLOCK [obj] with [key] : Ξεκλείδωμα κλειδωμένου αντικειμένου");
+        writeText("--- ΣΥΣΤΗΜΑ ---");
+        writeText("- SAVE                    : Αποθήκευση της προόδου σας στο παιχνίδι");
+        writeText("- LOAD                    : Φόρτωση προηγούμενου παιχνιδιού (ΜΟΝΟ στην αρχή)");
+        writeText("=================================================================\n");
+        // Ζητάει το αρχικό κείμενο από τον Controller
+        writeText(controller.getIntroText());
+    }
 
     private void createUI() {
         window = new JFrame("Command Prompt");
-        window.setSize(900, 600);
+        window.setSize(800, 700);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.getContentPane().setBackground(Color.BLACK);
-
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.BLACK);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER; //Κάθε στοιχείο πιάνει μια γραμμή
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL; //Οριζόντια επέκταση
-        gbc.anchor = GridBagConstraints.NORTHWEST; // Όλα ξεκινούν από πάνω αριστερά
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
 
         textArea = new JTextArea();
-        textArea.setEditable(false);  //ΔΕΝ μπορεί να επεξ. αυτά που εχει γράψει ήδη.
+        textArea.setEditable(false);
         textArea.setBackground(Color.BLACK);
         textArea.setForeground(Color.WHITE);
         textArea.setFont(new Font("Consolas", Font.PLAIN, 16));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-
         textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel inputPanel = new JPanel(new BorderLayout());
@@ -79,25 +87,23 @@ public class Display {
 
         mainPanel.add(textArea, gbc);
         mainPanel.add(inputPanel, gbc);
-
-
         gbc.weighty = 1;
         mainPanel.add(new JPanel() {{ setBackground(Color.BLACK); }}, gbc);
 
         JScrollPane scrollPane = new JScrollPane(mainPanel);
         scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(Color.BLACK); // Μαύρο background παντού
+        scrollPane.getViewport().setBackground(Color.BLACK);
 
         window.add(scrollPane);
 
         inputField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String input = inputField.getText().trim();//Βγαζει τα κενά
+                String input = inputField.getText().trim();
                 if (!input.isEmpty()) {
                     handleInput(input);
                 }
-                inputField.setText(""); //αρχικοποιει για την επομενη εισαγωγη
+                inputField.setText("");
             }
         });
 
@@ -107,14 +113,23 @@ public class Display {
     }
 
     public void writeText(String text) {
-        textArea.append(text + "\n"); //Προσαρτηση του νεου κειμενου
+        textArea.append(text + "\n");
         textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 
     private void handleInput(String input) {
         writeText("> " + input);
-        ParsedCommand pc = parser.analyze(input); //Σπάει την πρόταση
-        String response = commandHandler.handle(pc); //Αλλαζει το state του ggame
-        writeText(response + "\n");
+
+        // ΟΛΗ Η ΛΟΓΙΚΗ ΕΙΝΑΙ ΠΛΕΟΝ ΕΝΑ CALL ΣΤΟΝ CONTROLLER
+        String response = controller.processInput(input);
+
+        if (!response.isEmpty()) {
+            writeText(response);
+        }
+
+        // Αν ο Controller πει ότι νικήσαμε, απλά κλειδώνει το input
+        if (controller.isGameWon()) {
+            inputField.setEnabled(false);
+        }
     }
 }

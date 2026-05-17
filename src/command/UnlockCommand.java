@@ -2,7 +2,7 @@ package command;
 
 import engine.GameContext;
 import engine.Room;
-import java.util.List;
+import parser.ParsedCommand;
 
 public class UnlockCommand implements Command {
     private GameContext context;
@@ -12,22 +12,39 @@ public class UnlockCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> tokens) {
-        // Έλεγχος αν ο παίκτης έγραψε τι θέλει να ξεκλειδώσει
-        if (tokens.size() < 2) {
+    public String execute(ParsedCommand command) {
+        String target = command.getDirectObject(); // π.χ. chest
+        String tool = command.getIndirectObject(); // π.χ. key
+
+        // 1. Έλεγχος αν ο χρήστης έγραψε τι θέλει να ξεκλειδώσει
+        if (target == null || target.isEmpty()) {
             return "What are you trying to unlock?";
         }
 
-        String target = tokens.get(1).toLowerCase();
-        Room currentRoom = context.getCurrentRoom();
-        String desc = currentRoom.getDescription().toLowerCase();
+        // 2. Έλεγχος αν έγραψε ΜΕ ΤΙ θέλει να το ξεκλειδώσει (π.χ. unlock chest WITH KEY)
+        if (tool == null || tool.isEmpty()) {
+            return "What do you want to unlock the " + target + " with? (e.g., unlock " + target + " with key)";
+        }
 
-        // Έλεγχος αν αυτό που θέλει να ξεκλειδώσει υπάρχει στην περιγραφή
-        // Π.χ. αν η περιγραφή λέει "There is a locked chest here"
-        if (desc.contains(target)) {
-            return "You try to unlock the " + target + "... but you'll need a key for that. (Inventory system coming soon!)";
+        Room currentRoom = context.getCurrentRoom();
+
+        // 3. Υπάρχει τέτοιο κλειδωμένο αντικείμενο στο δωμάτιο;
+        if (!currentRoom.isLocked(target)) {
+            return "There is no locked " + target + " here.";
+        }
+
+        // 4. Έχει ο παίκτης το εργαλείο/κλειδί στο Inventory του;
+        if (!context.getPlayer().hasItem(tool)) {
+            return "You don't have a " + tool + " in your bag!";
+        }
+
+        // 5. Είναι το ΣΩΣΤΟ κλειδί για αυτή την κλειδαριά;
+        String requiredKey = currentRoom.getRequiredKey(target);
+        if (requiredKey.equalsIgnoreCase(tool)) {
+            currentRoom.unlockObject(target);
+            return "You hear a satisfying *CLICK*. The " + target + " is now unlocked!";
         } else {
-            return "I don't see any " + target + " here to unlock.";
+            return "You try to shove the " + tool + " into the " + target + ", but it doesn't fit.";
         }
     }
 }

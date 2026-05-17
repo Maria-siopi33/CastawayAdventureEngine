@@ -2,7 +2,7 @@ package command;
 
 import engine.GameContext;
 import engine.Room;
-import java.util.List;
+import parser.ParsedCommand;
 
 public class SwimCommand implements Command {
     private GameContext context;
@@ -12,16 +12,14 @@ public class SwimCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> tokens) {
+    public String execute(ParsedCommand command) {
         Room currentRoom = context.getCurrentRoom();
-        String desc = currentRoom.getDescription().toLowerCase();
-        String name = currentRoom.getName().toLowerCase();
 
-        // Ελέγχουμε αν το όνομα ή η περιγραφή παραπέμπουν σε παραλία
-        if (name.contains("beach") || desc.contains("shore") || desc.contains("beach")) {
+        // Η εντολή απλώς ρωτάει το δωμάτιο αν έχει νερό!
+        if (currentRoom.hasWater()) {
             return "You take a deep dive!";
         } else {
-            return "There's no water here. You can't swim in the " + name + "!";
+            return "There's no water here. You can't swim in the " + currentRoom.getName() + "!";
         }
     }
 }

@@ -27,6 +27,19 @@ public class WorldBuilder {
                 String description = roomData.getString("description");
 
                 Room room = new Room(id, description);
+                // Διαβάζει αν το δωμάτιο έχει νερό (προεπιλογή false αν δεν υπάρχει το πεδίο)
+                boolean hasWater = roomData.optBoolean("hasWater", false);
+                room.setHasWater(hasWater);
+
+                if (roomData.has("lockedObjects")) {
+                    JSONObject locked = roomData.getJSONObject("lockedObjects");
+                    for (String objName : locked.keySet()) {
+                        room.addLockedObject(objName, locked.getString(objName));
+                    }
+                }
+                // Διαβάζει αν αυτό το δωμάτιο τερματίζει το παιχνίδι
+                boolean isWinRoom = roomData.optBoolean("isWinRoom", false);
+                room.setWinRoom(isWinRoom);
 
                 if (roomData.has("items")) {
                     JSONArray itemsArray = roomData.getJSONArray("items");
@@ -37,7 +50,9 @@ public class WorldBuilder {
                         boolean isCarryable = itemData.optBoolean("carryable", true);
 
                         if (isCarryable) {
-                            room.addItem(new CarryableItem(name, itemDesc));
+                            // Διαβάζουμε το μήνυμα χρήσης (ή βάζουμε ένα τυπικό αν δεν υπάρχει στο JSON)
+                            String useMsg = itemData.optString("useText", "You try to use the " + name + ", but nothing special happens.");
+                            room.addItem(new CarryableItem(name, itemDesc, useMsg));
                         } else {
                             room.addItem(new StaticItem(name, itemDesc));
                         }
@@ -46,7 +61,7 @@ public class WorldBuilder {
                 world.put(id, room);
             }
 
-            // 2ο Πέρασμα: Σύνδεση Εξόδων
+            // 2ο Πέρασμα: Σύνδεση Εξόδων & Validation
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 Room currentRoom = world.get(roomData.getString("id"));
@@ -54,7 +69,15 @@ public class WorldBuilder {
 
                 for (String directionString : exits.keySet()) {
                     Direction dir = Direction.valueOf(directionString.toUpperCase());
-                    Room targetRoom = world.get(exits.getString(directionString));
+                    String targetRoomId = exits.getString(directionString);
+                    Room targetRoom = world.get(targetRoomId);
+
+                    // VALIDATION: Έλεγχος αν το δωμάτιο προορισμού υπάρχει!
+                    if (targetRoom == null) {
+                        System.err.println("WARNING: Broken Link! Room '" + currentRoom.getName() + "' tries to go " + dir + " to '" + targetRoomId + "', but that room doesn't exist!");
+                        continue; // Προχωράμε στην επόμενη έξοδο χωρίς να κρασάρει το πρόγραμμα
+                    }
+
                     currentRoom.setExit(dir, targetRoom);
                 }
             }

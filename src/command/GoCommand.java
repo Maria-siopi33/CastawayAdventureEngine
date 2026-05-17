@@ -3,7 +3,7 @@ package command;
 import engine.Direction;
 import engine.GameContext;
 import engine.Room;
-import java.util.List;
+import parser.ParsedCommand;
 import java.util.Map;
 
 public class GoCommand implements Command {
@@ -14,12 +14,12 @@ public class GoCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> tokens) {
-        if (tokens.size() < 2) {
+    public String execute(ParsedCommand command) {
+        String directionStr = command.getDirectObject();
+        if (directionStr == null || directionStr.isEmpty()) {
             return "Προς τα πού; (π.χ. go north)";
         }
-
-        String directionStr = tokens.get(1).toUpperCase();
+        directionStr = directionStr.toUpperCase();
         Direction direction;
         try {
             direction = Direction.valueOf(directionStr);

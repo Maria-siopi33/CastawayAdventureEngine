@@ -1,9 +1,11 @@
 package command;
 
 import engine.GameContext;
-import engine.Item; // Βεβαιώσου ότι έχεις κάνει import το Item
+import engine.Item;
 import engine.Room;
-import java.util.List;
+import engine.Direction;
+import parser.ParsedCommand;
+import java.util.Map;
 
 public class LookCommand implements Command {
     private GameContext context;
@@ -13,24 +15,53 @@ public class LookCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> tokens) {
+    public String execute(ParsedCommand command) {
         Room currentRoom = context.getCurrentRoom();
+        String target = command.getDirectObject();
+
+        // 1. Αν ο παίκτης έγραψε "look at [item]" (στοχευμένη εξέταση)
+        if (target != null && !target.isEmpty()) {
+            // Ψάχνουμε πρώτα στην τσάντα του παίκτη
+            Item itemToLook = context.getPlayer().findInInventory(target);
+
+            // Αν δεν το έχει, ψάχνουμε κάτω στο δωμάτιο
+            if (itemToLook == null) {
+                itemToLook = currentRoom.findItem(target);
+            }
+
+            if (itemToLook != null) {
+                return itemToLook.getName() + ": " + itemToLook.getDescription();
+            } else {
+                return "You don't see any " + target + " here to look at.";
+            }
+        }
+
+        // 2. Αν ο παίκτης έγραψε απλά "look" (Γενική εξέταση χώρου)
         StringBuilder response = new StringBuilder();
 
-        // 1. Περιγραφή δωματίου
+        // Περιγραφή δωματίου
         response.append(currentRoom.getDescription()).append("\n");
 
-        // 2. Έλεγχος για αντικείμενα στο δωμάτιο
+        // Εμφάνιση Διαθέσιμων Εξόδων
+        response.append("\nExits: ");
+        Map<Direction, Room> exits = currentRoom.getExits();
+        if (exits.isEmpty()) {
+            response.append("None. You are trapped!");
+        } else {
+            for (Direction dir : exits.keySet()) {
+                response.append(dir.name()).append(" ");
+            }
+        }
+        response.append("\n");
+
+        // Έλεγχος για αντικείμενα στο δωμάτιο
         if (!currentRoom.getItems().isEmpty()) {
             response.append("\nΣτο χώρο βλέπεις τα εξής αντικείμενα:\n");
             for (Item item : currentRoom.getItems()) {
-                response.append("- ").append(item.getName())
-                        .append(": ").append(item.getDescription()).append("\n");
+                response.append("- ").append(item.getName()).append("\n");
             }
-        } else {
-            response.append("\nΔεν φαίνεται να υπάρχει κάτι χρήσιμο στο έδαφος.");
         }
 
-        return response.toString();
+        return response.toString().trim();
     }
 }

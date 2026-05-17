@@ -2,9 +2,11 @@
   "rooms": [
     {
       "id": "Beach",
-      "description": "You are on a sunny beach. The sand is golden.",
+      "description": "You are on a sunny beach. The sand is golden. There is a locked chest here.",
+      "hasWater": true,
       "exits": {
-        "north": "Jungle"
+        "north": "Jungle",
+        "east": "TreasureRoom"
       },
       "items": [
         {
@@ -17,11 +19,14 @@
           "description": "A heavy gray rock that seems stuck in the sand.",
           "carryable": false
         }
-      ]
+      ],
+      "lockedObjects": {
+        "chest": "key"
+      }
     },
     {
       "id": "Jungle",
-      "description": "A dense jungle with tall trees.",
+      "description": "A dense jungle with tall trees. You can see something shiny on the ground.",
       "exits": {
         "south": "Beach"
       },
@@ -29,9 +34,24 @@
         {
           "name": "Machete",
           "description": "A sharp blade, useful for cutting vines.",
+          "carryable": true,
+          "useText": "You swing the machete aggressively! *SWOOSH* Some leaves fall to the ground."
+        },
+        {
+          "name": "Key",
+          "description": "A small rusty key.",
           "carryable": true
         }
       ]
+    },
+    {
+      "id": "TreasureRoom",
+      "description": "A secret room filled with gold, diamonds and ancient artifacts!",
+      "isWinRoom": true,
+      "exits": {
+        "west": "Beach"
+      },
+      "items": []
     }
   ]
 }

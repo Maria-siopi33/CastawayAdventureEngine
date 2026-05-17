@@ -45,12 +45,16 @@ public class Main {
         availableCommands.put("USE", new UseCommand(context));
         availableCommands.put("SWIM", new SwimCommand(context));
         availableCommands.put("UNLOCK", new UnlockCommand(context));
+        availableCommands.put("INVENTORY", new InventoryCommand(context));
+        availableCommands.put("STATUS", new StatusCommand(context));
 
         // ΔΗΜΙΟΥΡΓΙΑ COMMAND HANDLER
         // Του δίνουμε μόνο τις εντολές. Δεν χρειάζεται πλέον το 'world'!
         CommandHandler commandHandler = new CommandHandler(availableCommands);
 
-        // ΕΚΚΙΝΗΣΗ GUI
-        new Display(commandHandler, parser, context);
+        // ΕΚΚΙΝΗΣΗ GUI & CONTROLLER
+        // Η μεταβλητή περνιέται πλέον σωστά ως 'parser'
+        GameController gameController = new GameController(commandHandler, parser, context);
+        Display display = new Display(gameController);
     }
 }

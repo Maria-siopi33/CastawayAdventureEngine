@@ -1,6 +1,8 @@
 package command;
-import java.util.List;
+
+import parser.ParsedCommand;
 
 public interface Command {
-    String execute(List<String> tokens);
+    // Η εντολή δέχεται πλέον όλη τη δομημένη πληροφορία από τον Parser
+    String execute(ParsedCommand command);
 }

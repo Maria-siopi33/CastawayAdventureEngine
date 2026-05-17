@@ -1,9 +1,22 @@
 package engine;
 
-// Πρέπει να κάνει extends την κλάση Item (ή implements αν το Item είναι interface)
 public class CarryableItem extends Item {
+    // ΠΡΟΣΘΗΚΗ: Το μήνυμα που τυπώνεται όταν κάνεις "use [item]"
+    private String useMessage;
 
-    public CarryableItem(String name, String description) {
-        super(name, description); // Καλεί τον constructor της Item
+    // Αλλάζουμε λίγο τον constructor για να δέχεται το μήνυμα
+    public CarryableItem(String name, String description, String useMessage) {
+        super(name, description);
+        this.useMessage = useMessage;
+    }
+
+    @Override
+    public boolean canBePickedUp() {
+        return true;
+    }
+
+    // ΠΡΟΣΘΗΚΗ: Ο Getter για το μήνυμα
+    public String getUseMessage() {
+        return useMessage;
     }
 }

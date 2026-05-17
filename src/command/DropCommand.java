@@ -1,8 +1,7 @@
 package command;
 
 import engine.GameContext;
-import java.util.List;
-
+import parser.ParsedCommand;
 
 public class DropCommand implements Command {
     private GameContext context;
@@ -12,10 +11,11 @@ public class DropCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> tokens) {
-        if (tokens.size() < 2) return "What do you want to drop?";
-
-        String itemName = tokens.get(1);
+    public String execute(ParsedCommand command) {
+        String itemName = command.getDirectObject();
+        if (itemName == null || itemName.isEmpty()) {
+            return "What do you want to drop?";
+        }
         // Εδώ βρίσκουμε το carryable item στην τσάντα
         engine.CarryableItem item = context.getPlayer().findInInventory(itemName);
 
