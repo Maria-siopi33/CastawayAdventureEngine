@@ -47,6 +47,7 @@ public class Main {
         availableCommands.put("UNLOCK", new UnlockCommand(context));
         availableCommands.put("INVENTORY", new InventoryCommand(context));
         availableCommands.put("STATUS", new StatusCommand(context));
+        availableCommands.put("TALK", new TalkCommand(context));
 
         // ΔΗΜΙΟΥΡΓΙΑ COMMAND HANDLER
         // Του δίνουμε μόνο τις εντολές. Δεν χρειάζεται πλέον το 'world'!

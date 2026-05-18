@@ -2,6 +2,7 @@ package command;
 
 import engine.GameContext;
 import engine.Room;
+import engine.NPC;
 import engine.CarryableItem;
 import parser.ParsedCommand;
 
@@ -14,23 +15,32 @@ public class UseCommand implements Command {
 
     @Override
     public String execute(ParsedCommand command) {
-        String itemToUse = command.getDirectObject(); // π.χ. key
-        String target = command.getIndirectObject(); // π.χ. chest
+        String itemToUse = command.getDirectObject();
+        String target = command.getIndirectObject();
 
         if (itemToUse == null || itemToUse.isEmpty()) {
             return "What do you want to use?";
         }
 
-        // 1. Έχει ο παίκτης αυτό που θέλει να χρησιμοποιήσει;
         if (!context.getPlayer().hasItem(itemToUse)) {
             return "You don't have a " + itemToUse + " in your bag!";
         }
 
-        // 2. Προσπαθεί να το χρησιμοποιήσει ΠΑΝΩ ΣΕ ΚΑΤΙ; (π.χ. use key on chest)
         if (target != null && !target.isEmpty()) {
             Room currentRoom = context.getCurrentRoom();
 
-            // Είναι το target κλειδωμένο;
+            // --- ΕΛΕΓΧΟΣ ΓΙΑ ΧΡΗΣΗ ΠΑΝΩ ΣΕ NPC (Ghost) ---
+            if (itemToUse.equalsIgnoreCase("coin") && target.equalsIgnoreCase("ghost")) {
+                NPC ghost = currentRoom.findNPC("ghost");
+                if (ghost != null && ghost.getCurrentState() == NPC.State.BLOCK) {
+                    // Αλλάζουμε το State σε TALK
+                    ghost.setState(NPC.State.TALK);
+                    return "You offer the gold coin to the ghost captain. He snatches it, his expression softening. He steps aside, allowing you to pass north!\n" +
+                            "[SYSTEM]: The Ghost is now friendly. You can move North.";
+                }
+            }
+
+            // --- ΕΛΕΓΧΟΣ ΓΙΑ ΚΛΕΙΔΩΜΕΝΑ ΑΝΤΙΚΕΙΜΕΝΑ (Chest) ---
             if (currentRoom.isLocked(target)) {
                 String requiredKey = currentRoom.getRequiredKey(target);
                 if (requiredKey.equalsIgnoreCase(itemToUse)) {
@@ -44,8 +54,7 @@ public class UseCommand implements Command {
             }
         }
 
-        // 3. Αν το χρησιμοποιεί σκέτο (π.χ. use machete)
-        // Παίρνουμε το αντικείμενο από το inventory και διαβάζουμε το useMessage του!
+        // Αν το χρησιμοποιεί σκέτο (π.χ. use machete)
         CarryableItem itemInBag = context.getPlayer().findInInventory(itemToUse);
         return itemInBag.getUseMessage();
     }

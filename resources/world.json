@@ -2,22 +2,50 @@
   "rooms": [
     {
       "id": "Beach",
-      "description": "You are on a sunny beach. The sand is golden. There is a locked chest here.",
+      "name": "Sandy Beach",
+      "description": "A sunny beach with golden sand. Blue water stretches to the east.",
       "hasWater": true,
       "exits": {
         "north": "Jungle",
-        "east": "TreasureRoom"
+        "east": "Shipwreck",
+        "west": "Camp"
       },
       "items": [
+        {
+          "name": "Signpost",
+          "description": "An old wooden sign. It says: 'WARNING: Do not go North!'",
+          "carryable": false
+        },
         {
           "name": "Shell",
           "description": "A beautiful white sea shell.",
           "carryable": true
+        }
+      ]
+    },
+    {
+      "id": "Camp",
+      "name": "Abandoned Camp",
+      "description": "An old, quiet campsite. Someone lived here long ago.",
+      "exits": {
+        "east": "Beach"
+      },
+      "items": [
+        {
+          "name": "Campfire",
+          "description": "Cold ashes from a fire that died out months ago.",
+          "carryable": false
         },
         {
-          "name": "Rock",
-          "description": "A heavy gray rock that seems stuck in the sand.",
+          "name": "Chest",
+          "description": "A sturdy wooden chest. It is locked tightly.",
           "carryable": false
+        },
+        {
+          "name": "Journal",
+          "description": "A leather-bound book. The last entry says: 'Ghosts only want GOLD...'",
+          "carryable": true,
+          "useText": "You read the journal. It gives you a strong hint about the cave ghost!"
         }
       ],
       "lockedObjects": {
@@ -25,31 +53,95 @@
       }
     },
     {
-      "id": "Jungle",
-      "description": "A dense jungle with tall trees. You can see something shiny on the ground.",
+      "id": "Shipwreck",
+      "name": "Shipwreck",
+      "description": "The half-sunken remains of a pirate ship. Water laps against the broken hull.",
+      "hasWater": true,
       "exits": {
-        "south": "Beach"
+        "west": "Beach"
       },
       "items": [
         {
-          "name": "Machete",
-          "description": "A sharp blade, useful for cutting vines.",
-          "carryable": true,
-          "useText": "You swing the machete aggressively! *SWOOSH* Some leaves fall to the ground."
+          "name": "Mast",
+          "description": "The broken main mast of the ship.",
+          "carryable": false
         },
         {
-          "name": "Key",
-          "description": "A small rusty key.",
+          "name": "Coin",
+          "description": "A shiny gold coin. It has a skull stamped on it.",
           "carryable": true
         }
       ]
     },
     {
-      "id": "TreasureRoom",
-      "description": "A secret room filled with gold, diamonds and ancient artifacts!",
+      "id": "Jungle",
+      "name": "Jungle Path",
+      "description": "A dark path cuts through dense green plants and trees.",
+      "exits": {
+        "south": "Beach",
+        "north": "CaveEntrance"
+      },
+      "items": [
+        {
+          "name": "Statue",
+          "description": "A small stone statue, moss-covered and ancient.",
+          "carryable": false
+        },
+        {
+          "name": "Machete",
+          "description": "A sharp blade, useful for cutting vines.",
+          "carryable": true,
+          "useText": "You swing the machete Aggressively! *SWOOSH* Some leaves fall to the ground."
+        },
+        {
+          "name": "Key",
+          "description": "A rusty iron key.",
+          "carryable": true
+        }
+      ],
+      "npcs": [
+        {
+          "id": "monkey",
+          "name": "Monkey",
+          "description": "A small, playful monkey. It's watching you closely.",
+          "initialState": "IGNORE",
+          "dialogues": {
+            "IGNORE": "The monkey chatters and throws a piece of fruit at you! It seems busy playing.",
+            "TALK": "The monkey offers you a half-eaten banana. Best not to take it."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CaveEntrance",
+      "name": "Cave Entrance",
+      "description": "The eerie entrance to a cave. It is very dark inside.",
+      "exits": {
+        "south": "Jungle",
+        "north": "Hideout"
+      },
+      "items": [],
+      "npcs": [
+        {
+          "id": "ghost",
+          "name": "Ghost",
+          "description": "The translucent spirit of a pirate captain. He looks very angry.",
+          "initialState": "BLOCK",
+          "dialogues": {
+            "IGNORE": "The ghost stares through you. You feel a chill.",
+            "BLOCK": "NO ALIVE MAY PASS! Unless you have... GOLD! (Hint: Maybe USE a COIN on him?)",
+            "TALK": "You have proven yourself! Pass freely, friend."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Hideout",
+      "name": "Secret Hideout",
+      "description": "A hidden cavern filled with gold, diamonds and ancient artifacts!",
       "isWinRoom": true,
       "exits": {
-        "west": "Beach"
+        "south": "CaveEntrance"
       },
       "items": []
     }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Room {
     private String name;
@@ -12,6 +14,7 @@ public class Room {
     private Map<Direction, Room> exits = new HashMap<>();
     private List<Item> items = new ArrayList<>();
     private Map<String, String> lockedObjects = new HashMap<>();
+    private List<NPC> npcs = new ArrayList<>(); // Λίστα με NPCs στο δωμάτιο
 
     // ΠΡΟΣΘΗΚΗ: Το δωμάτιο γνωρίζει αν περιέχει νερό (για την SwimCommand)
     private boolean hasWater = false;
@@ -93,4 +96,19 @@ public class Room {
     }
     public boolean isWinRoom() { return isWinRoom; }
     public void setWinRoom(boolean winRoom) { isWinRoom = winRoom; }
+    public void addNPC(NPC npc) {
+        npcs.add(npc);
+    }
+
+    public List<NPC> getNPCs() {
+        return npcs;
+    }
+    public NPC findNPC(String npcName) {
+        for (NPC npc : npcs) {
+            if (npc.getName().equalsIgnoreCase(npcName)) {
+                return npc;
+            }
+        }
+        return null;
+    }
 }

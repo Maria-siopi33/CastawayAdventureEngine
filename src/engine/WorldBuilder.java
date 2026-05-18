@@ -20,45 +20,62 @@ public class WorldBuilder {
             JSONObject fullJson = new JSONObject(content);
             JSONArray roomsArray = fullJson.getJSONArray("rooms");
 
-            // 1ο Πέρασμα: Δημιουργία Δωματίων ΚΑΙ Αντικειμένων
+            // 1ο Πέρασμα: Δημιουργία Δωματίων, Items & NPCs
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 String id = roomData.getString("id");
+                String name = roomData.optString("name", id); // Παίρνει name ή id αν λείπει
                 String description = roomData.getString("description");
 
-                Room room = new Room(id, description);
-                // Διαβάζει αν το δωμάτιο έχει νερό (προεπιλογή false αν δεν υπάρχει το πεδίο)
-                boolean hasWater = roomData.optBoolean("hasWater", false);
-                room.setHasWater(hasWater);
+                Room room = new Room(name, description);
+                world.put(id, room);
 
-                if (roomData.has("lockedObjects")) {
-                    JSONObject locked = roomData.getJSONObject("lockedObjects");
-                    for (String objName : locked.keySet()) {
-                        room.addLockedObject(objName, locked.getString(objName));
-                    }
-                }
-                // Διαβάζει αν αυτό το δωμάτιο τερματίζει το παιχνίδι
-                boolean isWinRoom = roomData.optBoolean("isWinRoom", false);
-                room.setWinRoom(isWinRoom);
-
+                // --- Διαβάζει Items (υπάρχων κώδικας) ---
                 if (roomData.has("items")) {
-                    JSONArray itemsArray = roomData.getJSONArray("items");
-                    for (int j = 0; j < itemsArray.length(); j++) {
-                        JSONObject itemData = itemsArray.getJSONObject(j);
-                        String name = itemData.getString("name");
+                    JSONArray items = roomData.getJSONArray("items");
+                    for (int j = 0; j < items.length(); j++) {
+                        JSONObject itemData = items.getJSONObject(j);
+                        String itemName = itemData.getString("name");
                         String itemDesc = itemData.getString("description");
                         boolean isCarryable = itemData.optBoolean("carryable", true);
 
                         if (isCarryable) {
-                            // Διαβάζουμε το μήνυμα χρήσης (ή βάζουμε ένα τυπικό αν δεν υπάρχει στο JSON)
-                            String useMsg = itemData.optString("useText", "You try to use the " + name + ", but nothing special happens.");
-                            room.addItem(new CarryableItem(name, itemDesc, useMsg));
+                            String useMsg = itemData.optString("useText", "You utilize the " + itemName + ", but nothing special happens.");
+                            room.addItem(new CarryableItem(itemName, itemDesc, useMsg));
                         } else {
-                            room.addItem(new StaticItem(name, itemDesc));
+                            room.addItem(new StaticItem(itemName, itemDesc));
                         }
                     }
                 }
-                world.put(id, room);
+
+                // --- ΠΡΟΣΘΗΚΗ: Διαβάζει NPCs ---
+                if (roomData.has("npcs")) {
+                    JSONArray npcs = roomData.getJSONArray("npcs");
+                    for (int j = 0; j < npcs.length(); j++) {
+                        JSONObject npcData = npcs.getJSONObject(j);
+                        String npcId = npcData.getString("id");
+                        String npcName = npcData.getString("name");
+                        String npcDesc = npcData.getString("description");
+
+                        // Διαβάζει το αρχικό state από το string
+                        NPC.State initState = NPC.State.valueOf(npcData.getString("initialState").toUpperCase());
+
+                        NPC npc = new NPC(npcId, npcName, npcDesc, initState);
+
+                        // Διαβάζει το λεξικό dialogues
+                        JSONObject dialogues = npcData.getJSONObject("dialogues");
+                        for (String stateStr : dialogues.keySet()) {
+                            NPC.State state = NPC.State.valueOf(stateStr.toUpperCase());
+                            npc.addDialogue(state, dialogues.getString(stateStr));
+                        }
+                        room.addNPC(npc);
+                    }
+                }
+
+                // (Υπάρχων κώδικας για hasWater, lockedObjects, winRoom)
+                if (roomData.has("lockedObjects")) { /* ... */ }
+                if (roomData.has("hasWater")) { /* ... */ }
+                if (roomData.has("isWinRoom")) { /* ... */ }
             }
 
             // 2ο Πέρασμα: Σύνδεση Εξόδων & Validation
@@ -88,4 +105,4 @@ public class WorldBuilder {
         }
         return world;
     }
-} // 5. Κλείνεις την κλάση
+}

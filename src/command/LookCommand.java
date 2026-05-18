@@ -4,6 +4,7 @@ import engine.GameContext;
 import engine.Item;
 import engine.Room;
 import engine.Direction;
+import engine.NPC;
 import parser.ParsedCommand;
 import java.util.Map;
 
@@ -19,9 +20,15 @@ public class LookCommand implements Command {
         Room currentRoom = context.getCurrentRoom();
         String target = command.getDirectObject();
 
-        // 1. Αν ο παίκτης έγραψε "look at [item]" (στοχευμένη εξέταση)
+        // --- FIX ΓΙΑ ΤΟ PARSER BUG ("look at ghost") ---
+        if (target != null && target.isEmpty() && command.getIndirectObject() != null && !command.getIndirectObject().isEmpty()) {
+            target = command.getIndirectObject();
+        }
+
+        // 1. Στοχευμένη εξέταση (look at [item] ή [npc])
         if (target != null && !target.isEmpty()) {
-            // Ψάχνουμε πρώτα στην τσάντα του παίκτη
+
+            // Η ΓΡΑΜΜΗ ΠΟΥ ΕΛΕΙΠΕ: Ψάχνουμε πρώτα στην τσάντα του παίκτη
             Item itemToLook = context.getPlayer().findInInventory(target);
 
             // Αν δεν το έχει, ψάχνουμε κάτω στο δωμάτιο
@@ -31,12 +38,18 @@ public class LookCommand implements Command {
 
             if (itemToLook != null) {
                 return itemToLook.getName() + ": " + itemToLook.getDescription();
-            } else {
-                return "You don't see any " + target + " here to look at.";
             }
+
+            // ΠΡΟΣΘΗΚΗ: Ψάχνουμε μήπως είναι NPC (π.χ. look at ghost)
+            NPC npcToLook = currentRoom.findNPC(target);
+            if (npcToLook != null) {
+                return npcToLook.getName() + ": " + npcToLook.getDescription();
+            }
+
+            return "You don't see any '" + target + "' here to look at.";
         }
 
-        // 2. Αν ο παίκτης έγραψε απλά "look" (Γενική εξέταση χώρου)
+        // 2. Γενική εξέταση χώρου (look)
         StringBuilder response = new StringBuilder();
 
         // Περιγραφή δωματίου
@@ -56,9 +69,17 @@ public class LookCommand implements Command {
 
         // Έλεγχος για αντικείμενα στο δωμάτιο
         if (!currentRoom.getItems().isEmpty()) {
-            response.append("\nΣτο χώρο βλέπεις τα εξής αντικείμενα:\n");
+            response.append("\nYou see the following items here:\n");
             for (Item item : currentRoom.getItems()) {
                 response.append("- ").append(item.getName()).append("\n");
+            }
+        }
+
+        // Έλεγχος για NPCs στο δωμάτιο
+        if (!currentRoom.getNPCs().isEmpty()) {
+            response.append("\nCharacters present:\n");
+            for (NPC npc : currentRoom.getNPCs()) {
+                response.append("- ").append(npc.getName()).append("\n");
             }
         }
 

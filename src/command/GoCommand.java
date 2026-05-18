@@ -3,8 +3,8 @@ package command;
 import engine.Direction;
 import engine.GameContext;
 import engine.Room;
+import engine.NPC;
 import parser.ParsedCommand;
-import java.util.Map;
 
 public class GoCommand implements Command {
     private GameContext context;
@@ -16,28 +16,42 @@ public class GoCommand implements Command {
     @Override
     public String execute(ParsedCommand command) {
         String directionStr = command.getDirectObject();
+
         if (directionStr == null || directionStr.isEmpty()) {
-            return "Προς τα πού; (π.χ. go north)";
+            return "Which direction do you want to go? (e.g., go north)";
         }
+
         directionStr = directionStr.toUpperCase();
         Direction direction;
+
         try {
             direction = Direction.valueOf(directionStr);
         } catch (IllegalArgumentException e) {
-            return "Δεν είναι έγκυρη κατεύθυνση (North, South, East, West).";
+            return "That is not a valid direction (North, South, East, West).";
         }
 
-        Room nextRoom = context.getCurrentRoom().getExit(direction);
+        Room currentRoom = context.getCurrentRoom();
+        Room nextRoom = currentRoom.getExit(direction);
 
-        if (nextRoom != null) {
-            context.setCurrentRoom(nextRoom);
-            // Επιστρέφουμε το κείμενο ως ένα ενιαίο String
-            /*return "Πήγες στο: " + context.getCurrentRoom().getName() + "\n" +
-                    context.getCurrentRoom().getDescription();*/
-            return "You are at the " + nextRoom.getName().toLowerCase() + ".\n" +
-                    nextRoom.getDescription().replace(nextRoom.getName() + ":", "").trim();
-        } else {
-            return "Δεν μπορείς να πας προς τα εκεί.";
+        if (nextRoom == null) {
+            return "You can't go " + directionStr.toLowerCase() + " from here. There is no exit.";
         }
+
+        // --- NPC BLOCK CHECK ---
+        // Ελέγχει αν υπάρχει NPC που μπλοκάρει τη συγκεκριμένη κατεύθυνση (π.χ. North)
+        if (direction == Direction.NORTH) {
+            for (NPC npc : currentRoom.getNPCs()) {
+                if (npc.getCurrentState() == NPC.State.BLOCK) {
+                    return npc.getName() + " blocks your path and says: \"" + npc.getDialogue() + "\"";
+                }
+            }
+        }
+
+        // Μετακίνηση του παίκτη στο νέο δωμάτιο
+        context.getPlayer().setCurrentRoom(nextRoom);
+
+        // ΔΙΟΡΘΩΣΗ: Περνάμε 4 ορίσματα (action, directObject, preposition, indirectObject)
+        //return new LookCommand(context).execute(new ParsedCommand("LOOK", null, null, null));
+        return new LookCommand(context).execute(new ParsedCommand("LOOK", "", "", ""));
     }
 }

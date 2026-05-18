@@ -25,6 +25,10 @@
       "synonyms": ["open", "unseal"]
     },
     {
+      "action": "TALK",
+      "synonyms": ["speak", "chat", "ask"]
+    },
+    {
       "action": "LOOK",
       "synonyms": ["examine", "check", "view"]
     },
