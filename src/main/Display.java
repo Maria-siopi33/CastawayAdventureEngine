@@ -10,6 +10,7 @@ public class Display {
     private JTextArea textArea;
     private JTextField inputField;
     private GameController controller; // Η ΜΟΝΑΔΙΚΗ ΕΞΑΡΤΗΣΗ
+    private JScrollPane scrollPane;
 
     public Display(GameController controller) {
         this.controller = controller;
@@ -90,7 +91,7 @@ public class Display {
         gbc.weighty = 1;
         mainPanel.add(new JPanel() {{ setBackground(Color.BLACK); }}, gbc);
 
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane = new JScrollPane(mainPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(Color.BLACK);
 
@@ -114,7 +115,14 @@ public class Display {
 
     public void writeText(String text) {
         textArea.append(text + "\n");
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+
+        // Αναγκαστικό κατέβασμα της μπάρας κύλισης στο τέλος
+        SwingUtilities.invokeLater(() -> {
+            if (scrollPane != null) {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            }
+        });
     }
 
     private void handleInput(String input) {

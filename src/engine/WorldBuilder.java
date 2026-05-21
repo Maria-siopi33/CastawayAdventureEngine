@@ -1,6 +1,5 @@
 package engine;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
@@ -8,13 +7,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-// Ανοίγεις την ΚΛΑΣΗ (Αυτό έλειπε!)
 public class WorldBuilder {
 
-    // Εδώ βάζεις τη μέθοδό σου
     public Map<String, Room> buildWorld(String filePath) {
         Map<String, Room> world = new HashMap<>();
-
         try {
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
             JSONObject fullJson = new JSONObject(content);
@@ -24,13 +20,13 @@ public class WorldBuilder {
             for (int i = 0; i < roomsArray.length(); i++) {
                 JSONObject roomData = roomsArray.getJSONObject(i);
                 String id = roomData.getString("id");
-                String name = roomData.optString("name", id); // Παίρνει name ή id αν λείπει
+                String name = roomData.optString("name", id);
                 String description = roomData.getString("description");
 
                 Room room = new Room(name, description);
                 world.put(id, room);
 
-                // --- Διαβάζει Items (υπάρχων κώδικας) ---
+                // --- Διαβάζει Items ---
                 if (roomData.has("items")) {
                     JSONArray items = roomData.getJSONArray("items");
                     for (int j = 0; j < items.length(); j++) {
@@ -48,7 +44,7 @@ public class WorldBuilder {
                     }
                 }
 
-                // --- ΠΡΟΣΘΗΚΗ: Διαβάζει NPCs ---
+                // --- Διαβάζει NPCs ---
                 if (roomData.has("npcs")) {
                     JSONArray npcs = roomData.getJSONArray("npcs");
                     for (int j = 0; j < npcs.length(); j++) {
@@ -57,12 +53,9 @@ public class WorldBuilder {
                         String npcName = npcData.getString("name");
                         String npcDesc = npcData.getString("description");
 
-                        // Διαβάζει το αρχικό state από το string
                         NPC.State initState = NPC.State.valueOf(npcData.getString("initialState").toUpperCase());
-
                         NPC npc = new NPC(npcId, npcName, npcDesc, initState);
 
-                        // Διαβάζει το λεξικό dialogues
                         JSONObject dialogues = npcData.getJSONObject("dialogues");
                         for (String stateStr : dialogues.keySet()) {
                             NPC.State state = NPC.State.valueOf(stateStr.toUpperCase());
@@ -72,10 +65,23 @@ public class WorldBuilder {
                     }
                 }
 
-                // (Υπάρχων κώδικας για hasWater, lockedObjects, winRoom)
-                if (roomData.has("lockedObjects")) { /* ... */ }
-                if (roomData.has("hasWater")) { /* ... */ }
-                if (roomData.has("isWinRoom")) { /* ... */ }
+                // --- Κλειδωμένα Αντικείμενα ---
+                if (roomData.has("lockedObjects")) {
+                    JSONObject locks = roomData.getJSONObject("lockedObjects");
+                    for (String key : locks.keySet()) {
+                        room.addLockedObject(key, locks.getString(key));
+                    }
+                }
+
+                // --- Νερό (για την SwimCommand) ---
+                if (roomData.has("hasWater")) {
+                    room.setHasWater(roomData.getBoolean("hasWater"));
+                }
+
+                // --- Συνθήκη Νίκης (ΕΔΩ ΕΙΝΑΙ ΤΟ FIX!) ---
+                if (roomData.has("isWinRoom")) {
+                    room.setWinRoom(roomData.getBoolean("isWinRoom"));
+                }
             }
 
             // 2ο Πέρασμα: Σύνδεση Εξόδων & Validation
@@ -89,17 +95,15 @@ public class WorldBuilder {
                     String targetRoomId = exits.getString(directionString);
                     Room targetRoom = world.get(targetRoomId);
 
-                    // VALIDATION: Έλεγχος αν το δωμάτιο προορισμού υπάρχει!
                     if (targetRoom == null) {
                         System.err.println("WARNING: Broken Link! Room '" + currentRoom.getName() + "' tries to go " + dir + " to '" + targetRoomId + "', but that room doesn't exist!");
-                        continue; // Προχωράμε στην επόμενη έξοδο χωρίς να κρασάρει το πρόγραμμα
+                        continue;
                     }
 
                     currentRoom.setExit(dir, targetRoom);
                 }
             }
             System.out.println("Successful loading " + world.size() + " rooms!");
-
         } catch (Exception e) {
             System.err.println("Error reading JSON: " + filePath + " (" + e.getMessage() + ")");
         }
