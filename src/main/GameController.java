@@ -26,17 +26,28 @@ public class GameController {
         this.commandHistory = new ArrayList<>();
     }
 
-    // Η κεντρική μέθοδος που δέχεται το κείμενο του χρήστη και επιστρέφει την απάντηση
+    // --- ΤΟ ΕΞΥΠΝΟ ΦΙΛΤΡΟ ΔΥΣΚΟΛΙΑΣ ---
+    private String applyDifficultyFilter(String text) {
+        if (text == null) return "";
+        if (context.isEasyMode()) {
+            // Easy Mode: Απλά κρύβουμε τις ετικέτες, και το κείμενο του hint μένει
+            return text.replace("<hint>", "").replace("</hint>", "");
+        } else {
+            // Normal Mode: Σβήνουμε τις ετικέτες ΚΑΙ ό,τι υπάρχει ανάμεσά τους!
+            return text.replaceAll("(?s)<hint>.*?</hint>", "").trim();
+        }
+    }
+
     public String processInput(String input) {
         if (input.equalsIgnoreCase("SAVE")) {
-            return saveGame(false);
+            return applyDifficultyFilter(saveGame(false));
         }
 
         if (input.equalsIgnoreCase("LOAD")) {
             if (!commandHistory.isEmpty()) {
-                return "[SYSTEM WARNING]: You can only load a game at the very beginning! Please restart the app to load.";
+                return applyDifficultyFilter("[SYSTEM WARNING]: You can only load a game at the very beginning! Please restart the app to load.");
             }
-            return loadGame();
+            return applyDifficultyFilter(loadGame());
         }
 
         if (!isReplaying) {
@@ -50,17 +61,17 @@ public class GameController {
 
         if (!isReplaying) {
             output.append(response);
-            saveGame(true); // Autosave στο παρασκήνιο
+            saveGame(true);
         }
 
-        // Έλεγχος συνθήκης νίκης
         if (isGameWon() && !isReplaying) {
             output.append("\n\n***************************************************\n");
             output.append("   CONGRATULATIONS! YOU HAVE WON THE GAME!\n");
             output.append("***************************************************");
         }
 
-        return output.toString();
+        // Φιλτράρουμε το κείμενο πριν το δώσουμε στην οθόνη!
+        return applyDifficultyFilter(output.toString());
     }
 
     public boolean isGameWon() {
@@ -94,12 +105,11 @@ public class GameController {
             isReplaying = true;
 
             for (String cmd : savedCommands) {
-                processInput(cmd); // Εκτέλεση της ιστορικής εντολής
+                processInput(cmd);
             }
 
             isReplaying = false;
 
-            // Αναγκάζουμε ένα "look" στο τέλος για να δει ο παίκτης πού είναι
             String finalState = processInput("look");
 
             return "[SYSTEM]: Loading game state... Replaying " + savedCommands.size() + " actions.\n" +
@@ -111,14 +121,14 @@ public class GameController {
         }
     }
 
-    // Επιστρέφει την αρχική περιγραφή του 1ου δωματίου για το καλωσόρισμα
     public String getIntroText() {
         if (context.getCurrentRoom() != null) {
             String roomName = context.getCurrentRoom().getName();
             String description = context.getCurrentRoom().getDescription();
             String cleanDescription = description.replace(roomName + ":", "").trim();
 
-            return "You are at the " + roomName.toLowerCase() + ".\n" + cleanDescription + "\n--------------------------------------------------";
+            String intro = "You are at the " + roomName.toLowerCase() + ".\n" + cleanDescription + "\n--------------------------------------------------";
+            return applyDifficultyFilter(intro); // Φιλτράρεται και το καλωσόρισμα
         }
         return "";
     }

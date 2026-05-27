@@ -3,7 +3,7 @@
     {
       "id": "Beach",
       "name": "Sandy Beach",
-      "description": "A sunny beach with golden sand. Blue water stretches to the east.",
+      "description": "A sunny beach with golden sand. Blue water stretches to the east. <hint>\n[HINT: Type 'LOOK' to see what is around you, and 'GO NORTH' or 'GO WEST' to explore!]</hint>",
       "hasWater": true,
       "exits": {
         "north": "Jungle",
@@ -43,9 +43,9 @@
         },
         {
           "name": "Journal",
-          "description": "A leather-bound book. The last entry says: 'Ghosts only want GOLD...'",
+          "description": "A leather-bound book. The last entry is barely readable. <hint>\n[HINT: Ghosts only want GOLD to let you pass...]</hint>",
           "carryable": true,
-          "useText": "You read the journal. It gives you a strong hint about the cave ghost!"
+          "useText": "You read the journal... <hint>\n[HINT: The ghost in the cave needs a gold coin!]</hint>"
         }
       ],
       "lockedObjects": {
@@ -129,7 +129,7 @@
           "initialState": "BLOCK",
           "dialogues": {
             "IGNORE": "The ghost stares through you. You feel a chill.",
-            "BLOCK": "NO ALIVE MAY PASS! Unless you have... GOLD! (Hint: Maybe USE a COIN on him?)",
+            "BLOCK": "NO ALIVE MAY PASS! <hint>\n[HINT: Maybe try to 'USE COIN ON GHOST'?]</hint>",
             "TALK": "You have proven yourself! Pass freely, friend."
           }
         }
