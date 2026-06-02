@@ -1,0 +1,49 @@
+{
+  "rooms": [
+    {
+      "id": "Beach",
+      "name": "Space Station Docking Bay",
+      "description": "You are in the docking bay of an abandoned space station. Stars stretch to the east.",
+      "hasWater": false,
+      "exits": {
+        "west": "Camp"
+      },
+
+      "items": [
+        {
+          "name": "Console",
+          "description": "A blinking terminal screen. It reads: 'ERROR: Oxygen levels dropping North!'",
+          "carryable": false
+        },
+        {
+          "name": "Battery",
+          "description": "A fully charged plasma cell.",
+          "carryable": true
+        }
+      ]
+    },
+    {
+      "id": "Camp",
+      "name": "Control Room",
+      "description": "The main command room. Dusty screens line the walls.",
+      "exits": {
+        "east": "Beach"
+      },
+      "items": [
+        {
+          "name": "Generator",
+          "description": "A massive quantum core generator. It is currently offline.",
+          "carryable": false
+        },
+        {
+          "name": "Locker",
+          "description": "A heavy metal locker. It requires an ID Card to unlock.",
+          "carryable": false
+        }
+      ],
+      "lockedObjects": {
+        "locker":"Battery"
+      }
+    }
+  ]
+}
